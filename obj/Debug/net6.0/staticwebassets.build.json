@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "MnwO8MG1wcRzNnFUweARpZxcUGUdiUYZirjp2PGJ36c=",
+  "Source": "SharkSpotterAPI",
+  "BasePath": "_content/SharkSpotterAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
