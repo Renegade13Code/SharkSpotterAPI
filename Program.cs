@@ -19,6 +19,8 @@ builder.Services.AddDbContext<SharkSpotterDbContext>( options =>
 builder.Services.AddScoped<IBeachRepository, BeachRepository>();
 builder.Services.AddScoped<IFlagRepository, FlagRepository>();
 builder.Services.AddScoped<ISharkStatusRepository, SharkStatusRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 

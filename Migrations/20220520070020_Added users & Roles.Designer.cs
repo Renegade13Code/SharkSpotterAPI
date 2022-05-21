@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SharkSpotterAPI.Data;
 
@@ -11,9 +12,10 @@ using SharkSpotterAPI.Data;
 namespace SharkSpotterAPI.Migrations
 {
     [DbContext(typeof(SharkSpotterDbContext))]
-    partial class SharkSpotterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220520070020_Added users & Roles")]
+    partial class AddedusersRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
