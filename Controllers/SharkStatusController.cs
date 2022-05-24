@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharkSpotterAPI.Models.Domain;
 using SharkSpotterAPI.Models.DTO;
@@ -13,11 +14,18 @@ namespace SharkSpotterAPI.Controllers
     public class SharkStatusController : ControllerBase
     {
         private readonly ISharkStatusRepository sharkStatRepo;
+        private readonly IBeachRepository beachRepo;
+        private readonly IFlagRepository flagRepo;
+        private readonly IUserRepository userRepo;
         private readonly IMapper mapper;
 
-        public SharkStatusController(ISharkStatusRepository sharkStatRepo, IMapper mapper)
+        public SharkStatusController(ISharkStatusRepository sharkStatRepo, IBeachRepository beachRepo,
+            IFlagRepository flagRepo, IUserRepository userRepo, IMapper mapper)
         {
             this.sharkStatRepo = sharkStatRepo;
+            this.beachRepo = beachRepo;
+            this.flagRepo = flagRepo;
+            this.userRepo = userRepo;
             this.mapper = mapper;
         }
 
@@ -49,12 +57,29 @@ namespace SharkSpotterAPI.Controllers
 
         //// POST api/<SharkStatusController>
         [HttpPost]
+        [Authorize(Roles = "Admin, Spotter")]
         public async Task<IActionResult> Post([FromBody] AddSharkStatusRequest addSharkStatusRequest)
         {
+            // Validate flag, beach and user id
+            if (!(await ValidateBeachID(addSharkStatusRequest.BeachId)))
+            {
+                return BadRequest($"Beach ID {addSharkStatusRequest.BeachId} is not valid");
+            }
+            if (!(await ValidateFlagID(addSharkStatusRequest.FlagId)))
+            {
+                return BadRequest($"Flag ID {addSharkStatusRequest.FlagId} is not valid");
+            }
+
+            if(!(await ValidateUserID(addSharkStatusRequest.UserId)))
+            {
+                return BadRequest($"User ID {addSharkStatusRequest.UserId} is not valid");
+            }
+
             var SharkStatDomain = new SharkStatus()
             {
                 FlagId = addSharkStatusRequest.FlagId,
                 BeachId = addSharkStatusRequest.BeachId,
+                UserId = addSharkStatusRequest.UserId,
                 Start = addSharkStatusRequest.Start,
                 End = addSharkStatusRequest.End
             };
@@ -62,17 +87,33 @@ namespace SharkSpotterAPI.Controllers
             SharkStatDomain = await sharkStatRepo.AddSharkStatusAsync(SharkStatDomain);
             var sharkStatDTO = mapper.Map<SharkStatusDTO>(SharkStatDomain);
 
-            return Ok(sharkStatDTO);
+            return CreatedAtAction(nameof(Get), new { id = sharkStatDTO.Id }, sharkStatDTO);
         }
 
         //PUT api/<SharkStatusController>/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Spotter")]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateSharkStatusRequest updateSharkStatusRequest)
         {
+            // Validate flag and beach id
+            if (!(await ValidateBeachID(updateSharkStatusRequest.BeachId)))
+            {
+                return BadRequest($"Beach ID {updateSharkStatusRequest.BeachId} is not valid");
+            }
+            if (!(await ValidateFlagID(updateSharkStatusRequest.FlagId)))
+            {
+                return BadRequest($"Flag ID {updateSharkStatusRequest.FlagId} is not valid");
+            }
+            if (!(await ValidateUserID(updateSharkStatusRequest.UserId)))
+            {
+                return BadRequest($"User ID {updateSharkStatusRequest.UserId} is not valid");
+            }
+
             var sharkStatDomain = new SharkStatus()
             {
                 FlagId = updateSharkStatusRequest.FlagId,
                 BeachId = updateSharkStatusRequest.BeachId,
+                UserId = updateSharkStatusRequest.UserId,
                 Start = updateSharkStatusRequest.Start,
                 End = updateSharkStatusRequest.End
             };
@@ -85,12 +126,11 @@ namespace SharkSpotterAPI.Controllers
 
             var sharkStatusDTO = mapper.Map<SharkStatusDTO>(sharkStatDomain);
             return Ok(sharkStatusDTO);
-
-
         }
 
         // DELETE api/<SharkStatusController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin, Spotter")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var sharkStatDomain = await sharkStatRepo.DeleteSharkStatusAsync(id);
@@ -122,6 +162,40 @@ namespace SharkSpotterAPI.Controllers
             var sharkStatsDTO = mapper.Map<SharkStatusDTO>(sharkStatsDomain);
             return Ok(sharkStatsDTO);
         }
+        #endregion
+
+        #region private methods
+
+        private async Task<bool> ValidateBeachID(Guid beachID)
+        {
+            var foundBeach = await beachRepo.GetBeachAsync(beachID);
+            if(foundBeach == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private async Task<bool> ValidateFlagID(Guid flagID)
+        {
+            var foundflag = await flagRepo.GetFlagAsync(flagID);
+            if (foundflag == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private async Task<bool> ValidateUserID(Guid userID)
+        {
+            var foundUser = await userRepo.GetUserAsync(userID);
+            if (foundUser == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
         #endregion
     }
 }

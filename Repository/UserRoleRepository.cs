@@ -14,19 +14,33 @@ namespace SharkSpotterAPI.Repository
         // This is a generic method so that you can return List<Roles> or List<String>
         // Notice the `<T> after method name, so that the compiler understands where the T 
         // come from.
-        public async Task<List<T>?> GetUserRoles<T>(Guid id)
+        public async Task<List<T>?> GetUserRoles<T>(Guid userId)
         {
-            var roleIds = await dbContext.UserRoles
-                .Where(x => x.UserId == id)
+            //var roleIds = await dbContext.UserRoles
+            //    .Where(x => x.UserId == id)
+            //    .Select(x => x.RoleId)
+            //    .ToListAsync();
+
+            var foundUser = await dbContext.Users
+                .Include(x => x.UserRoles)
+                .FirstOrDefaultAsync(x => x.Id == userId);
+
+            if (foundUser == null)
+            {
+                return null;
+            }
+
+            var roleIds = foundUser.UserRoles
                 .Select(x => x.RoleId)
-                .ToListAsync();
+                .ToList();
 
             //check this
+            var roles = new List<T>();
             if (roleIds.Count() != 0 && roleIds != null)
             {
                 if(typeof(T) == typeof(String))
                 {
-                    var roles = new List<T>();
+                    //var roles = new List<T>();
                     foreach (var roleId in roleIds)
                     {
                         var roleName = dbContext.Roles
@@ -39,7 +53,7 @@ namespace SharkSpotterAPI.Repository
                 }
                 else if(typeof(T) == typeof(Role))
                 {
-                    var roles = new List<T>();
+                    //var roles = new List<T>();
                     foreach (var roleId in roleIds)
                     {
                         var foundRole = await dbContext.Roles.FindAsync(roleId);
@@ -48,12 +62,40 @@ namespace SharkSpotterAPI.Repository
                     return roles;
                 }
             }
-            return null;
+            return roles;
         }
 
-        public Task<User_Role?> UpdateUserRoles(Guid id)
+        public async Task<List<Role>?> UpdateUserRoles(Guid id, IEnumerable<Role> roles)
         {
-            throw new NotImplementedException();
+            
+            var userRoles = new List<Role>();
+
+            if(roles != null && roles.Count() > 0)
+            {
+                // Get role ids and create and add user roles list
+                foreach(var role in roles)
+                {
+                    // find role 
+                    var foundRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name.ToLower() == role.Name.ToLower());
+                    if(foundRole != null)
+                    {
+                        userRoles.Add(foundRole);
+                        await dbContext.UserRoles.AddAsync(new User_Role()
+                        {
+                            Id = Guid.NewGuid(),
+                            RoleId = foundRole.Id,
+                            UserId = id
+                        });
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            await dbContext.SaveChangesAsync();
+            return userRoles;
+
         }
     }
 }

@@ -9,6 +9,6 @@ namespace SharkSpotterAPI.Repository
         public Task<User?> GetUserAsync(Guid id);
         public Task<User?> UpdateUserAsync(Guid id, User user);
         public Task<User?> DeleteUserAsync(Guid id);
-        public Task<User> AuthenticateUser(User user);
+        public Task<User?> AuthenticateUser(string userName, string password);
     }
 }

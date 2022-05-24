@@ -26,6 +26,7 @@ namespace SharkSpotterAPI.Repository
             return await dbContext.SharkStatuses
                 .Include(x => x.Beach)
                 .Include(x => x.Flag)
+                .Include(x => x.User)
                 .ToListAsync();
         }
         public async Task<SharkStatus?> GetSharkStatusAsync(Guid id)
@@ -33,6 +34,7 @@ namespace SharkSpotterAPI.Repository
             return await dbContext.SharkStatuses
                 .Include(x => x.Beach)
                 .Include(x => x.Flag)
+                .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<SharkStatus?> UpdateSharkStatusAsync(Guid id, SharkStatus sharkStatus)
@@ -46,6 +48,7 @@ namespace SharkSpotterAPI.Repository
             foundSharkStat.BeachId = sharkStatus.BeachId;
             foundSharkStat.Start = sharkStatus.Start;
             foundSharkStat.End = sharkStatus.End;
+            foundSharkStat.UserId = sharkStatus.UserId;
 
             await dbContext.SaveChangesAsync();
             return foundSharkStat;
@@ -69,6 +72,7 @@ namespace SharkSpotterAPI.Repository
             return await dbContext.SharkStatuses
                 .Include(x => x.Beach)
                 .Include(x => x.Flag)
+                .Include(x => x.User)
                 .Where(x => x.BeachId == beachId)
                 .OrderByDescending(x => x.Start)
                 .ToListAsync();
@@ -80,6 +84,7 @@ namespace SharkSpotterAPI.Repository
             return await dbContext.SharkStatuses
                 .Include(x => x.Beach)
                 .Include(x => x.Flag)
+                .Include(x => x.User)
                 .Where(x => x.BeachId == beachId)
                 .OrderByDescending(x => x.Start)
                 .FirstAsync();

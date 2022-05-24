@@ -26,7 +26,7 @@ namespace SharkSpotterAPI.Repository
             return await dbContext.Beaches.ToListAsync(); 
         }
 
-        public async Task<Beach?> GetBeach(Guid id)
+        public async Task<Beach?> GetBeachAsync(Guid id)
         {
             return await dbContext.Beaches.FindAsync(id);
         }

@@ -15,9 +15,11 @@ namespace SharkSpotterAPI.Repository
         {
             this.dbContext = dbContext;
         }
-        public Task<User> AuthenticateUser(User user)
+
+        public async Task<User?> AuthenticateUser(string userName, string password)
         {
-            throw new NotImplementedException();
+            var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Username == userName && x.Password == password);
+            return user;
         }
         public async Task<User> AddUserAync(User user)
         {

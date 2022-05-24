@@ -3,6 +3,7 @@ using SharkSpotterAPI.Models.DTO;
 using AutoMapper;
 using SharkSpotterAPI.Models;
 using SharkSpotterAPI.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SharkSpotterAPI.Controllers
 {
@@ -32,7 +33,7 @@ namespace SharkSpotterAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var beachDomain = await beachRepo.GetBeach(id);
+            var beachDomain = await beachRepo.GetBeachAsync(id);
 
             if(beachDomain == null)
             {
@@ -46,6 +47,7 @@ namespace SharkSpotterAPI.Controllers
 
         // POST api/<BeachController>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Post([FromBody] AddBeachRequest addBeachRequest)
         {
             var BeachDomain = new Beach()
@@ -65,6 +67,7 @@ namespace SharkSpotterAPI.Controllers
 
         // PUT api/<BeachController>/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateBeachRequest updateBeachRequest)
         {
             var beachDomain = new Beach()
@@ -87,6 +90,7 @@ namespace SharkSpotterAPI.Controllers
 
         // DELETE api/<BeachController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var beachDomain = await beachRepo.DeleteBeach(id);

@@ -61,3 +61,8 @@ C:\Users\bbdnet2685\Documents\SharkSpotterAPI\obj\Debug\net6.0\SharkSpotterAPI.g
 C:\Users\bbdnet2685\Documents\SharkSpotterAPI\obj\Debug\net6.0\ref\SharkSpotterAPI.dll
 C:\Users\bbdnet2685\Documents\SharkSpotterAPI\bin\Debug\net6.0\AutoMapper.dll
 C:\Users\bbdnet2685\Documents\SharkSpotterAPI\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\bbdnet2685\Documents\SharkSpotterAPI\bin\Debug\net6.0\FluentValidation.dll
+C:\Users\bbdnet2685\Documents\SharkSpotterAPI\bin\Debug\net6.0\FluentValidation.AspNetCore.dll
+C:\Users\bbdnet2685\Documents\SharkSpotterAPI\bin\Debug\net6.0\FluentValidation.DependencyInjectionExtensions.dll
+C:\Users\bbdnet2685\Documents\SharkSpotterAPI\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\bbdnet2685\Documents\SharkSpotterAPI\bin\Debug\net6.0\Microsoft.IdentityModel.Abstractions.dll

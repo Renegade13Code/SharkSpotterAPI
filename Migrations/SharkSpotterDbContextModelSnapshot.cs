@@ -86,7 +86,7 @@ namespace SharkSpotterAPI.Migrations
                     b.Property<Guid>("BeachId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("End")
+                    b.Property<DateTime?>("End")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("FlagId")
@@ -95,11 +95,16 @@ namespace SharkSpotterAPI.Migrations
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BeachId");
 
                     b.HasIndex("FlagId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("SharkStatuses");
                 });
@@ -110,6 +115,10 @@ namespace SharkSpotterAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Firstname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -118,15 +127,11 @@ namespace SharkSpotterAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -170,9 +175,17 @@ namespace SharkSpotterAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SharkSpotterAPI.Models.Domain.User", "User")
+                        .WithMany("SharkStatuses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Beach");
 
                     b.Navigation("Flag");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SharkSpotterAPI.Models.Domain.User_Role", b =>
@@ -211,6 +224,8 @@ namespace SharkSpotterAPI.Migrations
 
             modelBuilder.Entity("SharkSpotterAPI.Models.Domain.User", b =>
                 {
+                    b.Navigation("SharkStatuses");
+
                     b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618

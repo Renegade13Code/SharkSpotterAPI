@@ -7,11 +7,13 @@ namespace SharkSpotterAPI.Models.Domain
         public Guid Id { get; set; }
         public Guid FlagId { get; set; }
         public Guid BeachId { get; set; }
+        public Guid UserId { get; set; }
         public DateTime Start { get; set; }
-        public DateTime End{ get; set; }
+        public DateTime? End{ get; set; }
 
         // Navigational properties
         public Beach Beach { get; set; }
         public Flag Flag { get; set; }
+        public User User { get; set; }
     }
 }

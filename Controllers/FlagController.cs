@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharkSpotterAPI.Models.Domain;
 using SharkSpotterAPI.Models.DTO;
@@ -45,6 +46,7 @@ namespace SharkSpotterAPI.Controllers
 
         // POST api/<FlagController>
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Post([FromBody] AddFlagRequest addFlagRequest)
         {
             var flagDomain = new Flag()
@@ -59,6 +61,7 @@ namespace SharkSpotterAPI.Controllers
 
         // PUT api/<FlagController>/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateFlagRequest updateFlagRequest)
         {
             var flagDomain = new Flag()
@@ -79,6 +82,7 @@ namespace SharkSpotterAPI.Controllers
 
         //// DELETE api/<FlagController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var flagDomain = await flagRepo.DeleteFlagAsync(id);

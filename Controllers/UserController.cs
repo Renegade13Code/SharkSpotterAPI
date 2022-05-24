@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharkSpotterAPI.Models.Domain;
 using SharkSpotterAPI.Models.DTO;
@@ -24,16 +25,18 @@ namespace SharkSpotterAPI.Controllers
         }
         // GET: api/<UserController>
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Get()
         {
             var usersDomain = await userRepo.GetAllUserAsync();
             var userDTO = mapper.Map<List<UserDTO>>(usersDomain);
-
+            // Loop over users and retrive roles?
             return Ok(userDTO);
         }
 
         // GET api/<UserController>/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Get(Guid id)
         {
            var userDomain = await userRepo.GetUserAsync(id);
@@ -45,8 +48,8 @@ namespace SharkSpotterAPI.Controllers
             var userDTO = mapper.Map<UserDTO>(userDomain);
             //return Ok(userDTO);           
             var roles = await userRoleRepo.GetUserRoles<Role>(id);
-            var rolesDTO = mapper.Map<List<RoleDTO>>(roles);
-            return Ok(rolesDTO);           
+            userDTO.Roles = mapper.Map<List<RoleDTO>>(roles);
+            return Ok(userDTO);           
         }
 
         // POST api/<UserController>
@@ -57,6 +60,7 @@ namespace SharkSpotterAPI.Controllers
             {
                 Username = addUserRequest.Username,
                 Email = addUserRequest.Email,
+                // Hash password here
                 Password = addUserRequest.Password,
                 Firstname = addUserRequest.Firstname,
                 Lastname = addUserRequest.Lastname,
@@ -64,11 +68,14 @@ namespace SharkSpotterAPI.Controllers
             userDomain = await userRepo.AddUserAync(userDomain);
 
             var userDTO = mapper.Map<UserDTO>(userDomain);
+            var roles = await userRoleRepo.GetUserRoles<Role>(userDTO.Id);
+            userDTO.Roles = mapper.Map<List<RoleDTO>>(roles);
             return CreatedAtAction(nameof(Get), new {id = userDTO.Id} , userDTO);
         }
 
         // PUT api/<UserController>/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserRequest updateUserRequest)
         {
             var userDomain = new User()
@@ -86,11 +93,14 @@ namespace SharkSpotterAPI.Controllers
             }
 
             var userDTO = mapper.Map<UserDTO>(userDomain);
+            var roles = await userRoleRepo.GetUserRoles<Role>(id);
+            userDTO.Roles = mapper.Map<List<RoleDTO>>(roles);
             return Ok(userDTO);
         }
 
         // DELETE api/<UserController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var userDomain = await userRepo.DeleteUserAsync(id);
@@ -100,6 +110,8 @@ namespace SharkSpotterAPI.Controllers
             }
 
             var userDTO = mapper.Map<UserDTO>(userDomain);
+            var roles = await userRoleRepo.GetUserRoles<Role>(id);
+            userDTO.Roles = mapper.Map<List<RoleDTO>>(roles);
             return Ok(userDTO);
         }
     }

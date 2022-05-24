@@ -11,5 +11,6 @@
 
         // Navigational properties
         public List<User_Role> UserRoles { get; set; }
+        public List<SharkStatus> SharkStatuses { get; set; }
     }
 }
