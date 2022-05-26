@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharkSpotterAPI.Models.Domain;
 using SharkSpotterAPI.Models.DTO;
@@ -40,6 +41,7 @@ namespace SharkSpotterAPI.Controllers
 
         // PUT api/<UserRoleController>/5
         [HttpPut("{userId}")]
+        [Authorize(Roles="Admin")]
         public async Task<IActionResult> Put([FromRoute] Guid userId, [FromBody] UpdateUserRolesRequest updateUserRolesRequest)
         {
             var userDomain = await userRepo.GetUserAsync(userId);

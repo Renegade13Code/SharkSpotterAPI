@@ -16,12 +16,14 @@ namespace SharkSpotterAPI.Controllers
         private readonly IUserRepository userRepo;
         private readonly IMapper mapper;
         private readonly IUserRoleRepository userRoleRepo;
+        private readonly IAuthService authService;
 
-        public UserController(IUserRepository userRepo, IMapper mapper, IUserRoleRepository userRoleRepo)
+        public UserController(IUserRepository userRepo, IMapper mapper, IUserRoleRepository userRoleRepo, IAuthService authService)
         {
             this.userRepo = userRepo;
             this.mapper = mapper;
             this.userRoleRepo = userRoleRepo;
+            this.authService = authService;
         }
         // GET: api/<UserController>
         [HttpGet]
@@ -56,16 +58,18 @@ namespace SharkSpotterAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] AddUserRequest addUserRequest)
         {
-            var userDomain = new User()
-            {
-                Username = addUserRequest.Username,
-                Email = addUserRequest.Email,
-                // Hash password here
-                Password = addUserRequest.Password,
-                Firstname = addUserRequest.Firstname,
-                Lastname = addUserRequest.Lastname,
-            };
-            userDomain = await userRepo.AddUserAync(userDomain);
+            //var userDomain = new User()
+            //{
+            //    Username = addUserRequest.Username,
+            //    Email = addUserRequest.Email,
+            //    // Hash password here
+            //    Password = addUserRequest.Password,
+            //    Firstname = addUserRequest.Firstname,
+            //    Lastname = addUserRequest.Lastname,
+            //};
+            //userDomain = await userRepo.AddUserAync(userDomain);
+
+            var userDomain = await authService.RegisterUser(addUserRequest);
 
             var userDTO = mapper.Map<UserDTO>(userDomain);
             var roles = await userRoleRepo.GetUserRoles<Role>(userDTO.Id);
@@ -74,29 +78,29 @@ namespace SharkSpotterAPI.Controllers
         }
 
         // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserRequest updateUserRequest)
-        {
-            var userDomain = new User()
-            {
-                Username = updateUserRequest.Username,
-                Email = updateUserRequest.Email,
-                Password = updateUserRequest.Password,
-                Firstname = updateUserRequest.Firstname,
-                Lastname = updateUserRequest.Lastname
-            };
-            userDomain = await userRepo.UpdateUserAsync(id, userDomain);
-            if(userDomain == null)
-            {
-                return NotFound($"User with id {id} does not exist");
-            }
+        //[HttpPut("{id}")]
+        //[Authorize(Roles = "Admin")]
+        //public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserRequest updateUserRequest)
+        //{
+        //    var userDomain = new User()
+        //    {
+        //        Username = updateUserRequest.Username,
+        //        Email = updateUserRequest.Email,
+        //        Password = updateUserRequest.Password,
+        //        Firstname = updateUserRequest.Firstname,
+        //        Lastname = updateUserRequest.Lastname
+        //    };
+        //    userDomain = await userRepo.UpdateUserAsync(id, userDomain);
+        //    if(userDomain == null)
+        //    {
+        //        return NotFound($"User with id {id} does not exist");
+        //    }
 
-            var userDTO = mapper.Map<UserDTO>(userDomain);
-            var roles = await userRoleRepo.GetUserRoles<Role>(id);
-            userDTO.Roles = mapper.Map<List<RoleDTO>>(roles);
-            return Ok(userDTO);
-        }
+        //    var userDTO = mapper.Map<UserDTO>(userDomain);
+        //    var roles = await userRoleRepo.GetUserRoles<Role>(id);
+        //    userDTO.Roles = mapper.Map<List<RoleDTO>>(roles);
+        //    return Ok(userDTO);
+        //}
 
         // DELETE api/<UserController>/5
         [HttpDelete("{id}")]

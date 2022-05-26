@@ -10,24 +10,21 @@ namespace SharkSpotterAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserRepository userRepo;
-        private readonly IMyTokenHandler myTokenHandler;
+        private readonly IAuthService authService;
 
-        public AuthController(IUserRepository userRepo, IMyTokenHandler myTokenHandler)
+        public AuthController(IAuthService authService)
         {
-            this.userRepo = userRepo;
-            this.myTokenHandler = myTokenHandler;
+            this.authService = authService;
         }
         // GET: api/<AuthController>
         [HttpGet]
         [Route("login")]
         public async Task<IActionResult> UserLogin([FromQuery] UserLoginRequest userLoginRequest)
         {
-            // Hash password before comparing
-            var user = await userRepo.AuthenticateUser(userLoginRequest.UserName, userLoginRequest.Password);
+            var user = await authService.AuthenticateUser(userLoginRequest.UserName, userLoginRequest.Password);
             if (user != null)
             {
-                var token = await myTokenHandler.CreateToken(user);
+                var token = await authService.CreateToken(user);
                 return Ok(token);
             }
             return BadRequest("Username or password is incorrect");
